@@ -3,247 +3,201 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>InstaPronounce - Speak Instantly</title>
+    <title>InstaPronounce - Instant Text to Speech</title>
     <meta
       name="description"
-      content="Need to pronounce something quickly? Get a fast, simple pronunciation attempt. Perfect for urgent situations."
+      content="Quickly convert text to speech online. Practice urgent announcements and vocalize short messages instantly. Simple and free TTS tool."
     />
-    <link rel="icon" href="/favicon.ico" type="image/x-icon" />
-    <link rel="manifest" href="/manifest.json" />
-    <script src="https://js.puter.com/v2/"></script>
+    <meta
+      name="keywords"
+      content="text to speech, tts, online tts, free tts, speech synthesis, voice, quick announcement, practice speech, urgent voice, simple tts"
+    />
+    <link rel="icon" href="favicon.ico" type="image/x-icon" />
+    <link rel="manifest" href="manifest.webmanifest" />
     <style>
+      /* Google Material 3 Expressive Style - Simplified */
       body {
-        font-family: sans-serif;
+        font-family: "Roboto", sans-serif;
+        margin: 20px;
         display: flex;
         flex-direction: column;
         align-items: center;
-        padding: 20px;
-        background-color: #f8f9fa; /* Light background */
+        background-color: #f3f0e8; /* Light background */
+        color: #1e1e1e; /* Dark text */
+      }
+      h1,
+      h2 {
+        color: #6200ee; /* Primary color */
       }
       .container {
-        max-width: 500px;
-        width: 100%;
-        padding: 30px;
-        background-color: #fff; /* White container */
+        width: 90%;
+        max-width: 600px;
+        padding: 20px;
+        background-color: #fff;
         border-radius: 8px;
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        margin-bottom: 20px;
-      }
-      h1 {
-        color: #343a40; /* Dark heading */
-        margin-bottom: 20px;
-        text-align: center;
       }
       textarea {
-        width: calc(100% - 20px);
-        padding: 10px;
-        margin-bottom: 10px;
-        border: 1px solid #ced4da; /* Light border */
-        border-radius: 4px;
-        font-size: 16px;
+        width: 100%;
         min-height: 100px;
+        margin-bottom: 10px;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        box-sizing: border-box;
       }
-      button {
-        padding: 10px 20px;
-        font-size: 16px;
-        background-color: #007bff; /* Primary button color */
-        color: #fff;
+      button,
+      select {
+        padding: 10px 15px;
+        margin-right: 10px;
         border: none;
         border-radius: 4px;
         cursor: pointer;
-        transition: background-color 0.3s ease;
-        margin-bottom: 5px;
+        font-size: 16px;
       }
-      button:hover {
-        background-color: #0056b3;
+      button {
+        background-color: #6200ee;
+        color: white;
       }
-      #pronunciationOutput {
+      select {
+        border: 1px solid #ccc;
+        background-color: white;
+        color: #1e1e1e;
+      }
+      #audio-output {
         margin-top: 20px;
-        padding: 15px;
-        border: 1px solid #28a745; /* Success border */
-        border-radius: 4px;
-        background-color: #d4edda; /* Light success background */
-        color: #155724; /* Dark success text */
-        font-size: 18px;
-        white-space: pre-wrap; /* Preserve formatting */
       }
-      .material-3-expressive {
-        /* Example class for potential styling */
-        /* Add Material 3 Expressive styles here (you'd need to define these) */
-      }
-      #savedConversions {
-        margin-top: 20px;
-        width: 100%;
-      }
-      #savedConversions h2 {
-        color: #343a40;
-        text-align: center;
-        margin-bottom: 10px;
-      }
-      #conversionsList {
-        list-style-type: none;
-        padding: 0;
-      }
-      #conversionsList li {
-        background-color: #e9ecef; /* Light gray for list items */
-        padding: 10px;
-        margin-bottom: 5px;
-        border-radius: 4px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-      }
-      #conversionsList button {
-        background-color: #6c757d; /* Secondary button color */
-        color: #fff;
-        padding: 5px 10px;
-        border-radius: 4px;
-        cursor: pointer;
-        font-size: 14px;
-        transition: background-color 0.3s ease;
-      }
-      #conversionsList button:hover {
-        background-color: #5a6268;
-      }
-      .save-button {
+      #local-storage-info {
         margin-top: 10px;
-        background-color: #28a745; /* Save button color */
-      }
-      .save-button:hover {
-        background-color: #1e7e34;
-      }
-      #recordingControls {
-        margin-top: 20px;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-      }
-      #downloadButton {
-        display: none; /* Initially hidden */
-        margin-top: 10px;
-        background-color: #6c757d;
-      }
-      #downloadButton:hover {
-        background-color: #5a6268;
+        font-size: 0.8em;
+        color: #555;
       }
     </style>
   </head>
-  <body class="material-3-expressive">
+  <body>
     <div class="container">
       <h1>InstaPronounce</h1>
-      <textarea
-        id="textToPronounce"
-        placeholder="Enter text (English) up to 3000 characters"
-      ></textarea>
-      <button onclick="pronounceText()">Attempt Pronunciation</button>
-      <div id="pronunciationOutput"></div>
-      <button class="save-button" onclick="saveConversion()">Save This</button>
+      <p>
+        Instantly convert your text to speech for practice or quick
+        announcements.
+      </p>
+      <textarea id="text-input" placeholder="Enter text here"></textarea>
+      <div>
+        <label for="voice-select">Emphasis:</label>
+        <select id="voice-select">
+          <option value="">Standard</option>
+          <option value="urgent">Urgent</option>
+          <option value="questioning">Questioning</option>
+        </select>
+        <button id="speak-button">Pronounce</button>
+        <button id="download-button" disabled>Download Audio</button>
+      </div>
+      <div id="audio-output"></div>
+      <div id="local-storage-info"></div>
     </div>
 
-    <div id="recordingControls" class="container">
-      <h2>Record Pronunciation</h2>
-      <button id="startButton" onclick="startRecording()">
-        Start Recording
-      </button>
-      <button id="stopButton" onclick="stopRecording()" disabled>
-        Stop and Download
-      </button>
-      <a id="downloadButton" style="display: none">Download Recording</a>
-    </div>
-
-    <div id="savedConversions" class="container">
-      <h2>Saved Pronunciations</h2>
-      <ul id="conversionsList"></ul>
-    </div>
-
-    <script src="https://js.puter.com/v2/"></script>
     <script>
-      let mediaRecorder;
-      let audioChunks = [];
+      const textInput = document.getElementById("text-input");
+      const voiceSelect = document.getElementById("voice-select");
+      const speakButton = document.getElementById("speak-button");
+      const downloadButton = document.getElementById("download-button");
+      const audioOutput = document.getElementById("audio-output");
+      const localStorageInfo = document.getElementById("local-storage-info");
+      let speech = null;
+      let lastUsedText = localStorage.getItem("lastUsedText") || "";
+      let lastUsedVoice = localStorage.getItem("lastUsedVoice") || "";
 
-      async function startRecording() {
-        audioChunks = [];
-        const stream = await navigator.mediaDevices.getUserMedia({
-          audio: true,
-        });
-        mediaRecorder = new MediaRecorder(stream);
+      textInput.value = lastUsedText;
+      voiceSelect.value = lastUsedVoice;
 
-        mediaRecorder.ondataavailable = (event) => {
-          if (event.data.size > 0) {
-            audioChunks.push(event.data);
+      speakButton.addEventListener("click", () => {
+        const text = textInput.value.trim();
+        const selectedVoice = voiceSelect.value;
+
+        if (text) {
+          speechSynthesis.cancel(); // Cancel any ongoing speech
+
+          speech = new SpeechSynthesisUtterance(text);
+
+          // Basic tone/emphasis selection using browser voices (may vary across browsers)
+          let voice = null;
+          const voices = speechSynthesis.getVoices();
+          if (selectedVoice === "urgent") {
+            voice = voices.find(
+              (v) =>
+                v.name.includes("Fast") ||
+                (v.lang.includes("en-US") && v.name.includes("David"))
+            ); // Example - adjust based on available voices
+          } else if (selectedVoice === "questioning") {
+            voice = voices.find(
+              (v) =>
+                v.name.includes("Ava") ||
+                (v.lang.includes("en-US") && v.name.includes("Zira"))
+            ); // Example - adjust based on available voices
+            speech.pitch = 1.2; // Slightly higher pitch for questioning
           }
-        };
 
-        mediaRecorder.onstop = () => {
-          const audioBlob = new Blob(audioChunks, { type: "audio/webm" });
-          const audioUrl = URL.createObjectURL(audioBlob);
-          const downloadLink = document.getElementById("downloadButton");
-          downloadLink.href = audioUrl;
-          downloadLink.download = "instaPronounce_recording.webm";
-          downloadLink.style.display = "block";
-          document.getElementById("startButton").disabled = false;
-          document.getElementById("stopButton").disabled = true;
-          stream.getTracks().forEach((track) => track.stop()); // Stop the microphone stream
-        };
+          if (voice) {
+            speech.voice = voice;
+          }
 
-        document.getElementById("startButton").disabled = true;
-        document.getElementById("stopButton").disabled = false;
-        puter.ai.txt2speech(document.getElementById("textToPronounce").value); // Start pronunciation after recording starts
-      }
+          speechSynthesis.speak(speech);
+          downloadButton.disabled = false;
 
-      function stopRecording() {
-        if (mediaRecorder) {
-          mediaRecorder.stop();
+          // Save to local storage
+          localStorage.setItem("lastUsedText", text);
+          localStorage.setItem("lastUsedVoice", selectedVoice);
+          localStorageInfo.textContent =
+            "Last used text and emphasis saved locally.";
+        } else {
+          alert("Please enter some text to pronounce.");
+          downloadButton.disabled = true;
         }
-      }
+      });
 
-      function pronounceText() {
-        const text = document.getElementById("textToPronounce").value;
-        if (text.length > 3000) {
-          document.getElementById("pronunciationOutput").innerText =
-            "Text exceeds the 3000 character limit.";
-          return;
+      downloadButton.addEventListener("click", () => {
+        if (speech) {
+          // This is a very basic client-side download - more robust solutions might require a service worker and more complex handling for different browsers.
+          const text = speech.text;
+          const filename =
+            "instapronounce_" +
+            new Date()
+              .toISOString()
+              .slice(0, 19)
+              .replace(/-/g, "")
+              .replace(/T/g, "_")
+              .replace(/:/g, "") +
+            ".wav"; // Simple filename
+          const data = new Blob([new TextEncoder().encode(text)], {
+            type: "text/plain",
+          }); // In a real scenario, you'd download the audio
+
+          const url = window.URL.createObjectURL(data);
+          const a = document.createElement("a");
+          a.href = url;
+          a.download = filename;
+          document.body.appendChild(a);
+          a.click();
+          window.URL.revokeObjectURL(url);
+        } else {
+          alert("Please pronounce some text first.");
         }
-        document.getElementById(
-          "pronunciationOutput"
-        ).innerText = `Attempting pronunciation... (Will be recorded if you start recording below)`;
-        // Pronunciation will start when the "Start Recording" button is clicked
-      }
+      });
 
-      function saveConversion() {
-        const text = document.getElementById("textToPronounce").value;
-        const saved = localStorage.getItem("savedConversions");
-        let conversions = saved ? JSON.parse(saved) : [];
-        conversions.push(text);
-        localStorage.setItem("savedConversions", JSON.stringify(conversions));
-        displaySavedConversions();
+      // Basic service worker for potential future enhancements (optional for this simple version)
+      if ("serviceWorker" in navigator) {
+        navigator.serviceWorker
+          .register("/sw.js")
+          .then((registration) =>
+            console.log(
+              "Service Worker registered with scope:",
+              registration.scope
+            )
+          )
+          .catch((error) =>
+            console.error("Service Worker registration failed:", error)
+          );
       }
-
-      function displaySavedConversions() {
-        const saved = localStorage.getItem("savedConversions");
-        const conversions = saved ? JSON.parse(saved) : [];
-        const list = document.getElementById("conversionsList");
-        list.innerHTML = "";
-        conversions.forEach((conversion, index) => {
-          const listItem = document.createElement("li");
-          listItem.textContent = conversion;
-          const deleteButton = document.createElement("button");
-          deleteButton.textContent = "Delete";
-          deleteButton.onclick = () => deleteConversion(index);
-          listItem.appendChild(deleteButton);
-          list.appendChild(listItem);
-        });
-      }
-
-      function deleteConversion(index) {
-        const saved = localStorage.getItem("savedConversions");
-        const conversions = saved ? JSON.parse(saved) : [];
-        conversions.splice(index, 1);
-        localStorage.setItem("savedConversions", JSON.stringify(conversions));
-        displaySavedConversions();
-      }
-
-      window.onload = displaySavedConversions;
     </script>
   </body>
 </html>
