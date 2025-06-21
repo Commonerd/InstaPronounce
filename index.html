@@ -52,6 +52,7 @@
         border-radius: 4px;
         cursor: pointer;
         transition: background-color 0.3s ease;
+        margin-bottom: 5px;
       }
       button:hover {
         background-color: #0056b3;
@@ -111,6 +112,20 @@
       .save-button:hover {
         background-color: #1e7e34;
       }
+      #recordingControls {
+        margin-top: 20px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+      #downloadButton {
+        display: none; /* Initially hidden */
+        margin-top: 10px;
+        background-color: #6c757d;
+      }
+      #downloadButton:hover {
+        background-color: #5a6268;
+      }
     </style>
   </head>
   <body class="material-3-expressive">
@@ -118,11 +133,22 @@
       <h1>InstaPronounce</h1>
       <textarea
         id="textToPronounce"
-        placeholder="Enter text (English) up to 5000 characters"
+        placeholder="Enter text (English) up to 3000 characters"
       ></textarea>
       <button onclick="pronounceText()">Attempt Pronunciation</button>
       <div id="pronunciationOutput"></div>
       <button class="save-button" onclick="saveConversion()">Save This</button>
+    </div>
+
+    <div id="recordingControls" class="container">
+      <h2>Record Pronunciation</h2>
+      <button id="startButton" onclick="startRecording()">
+        Start Recording
+      </button>
+      <button id="stopButton" onclick="stopRecording()" disabled>
+        Stop and Download
+      </button>
+      <a id="downloadButton" style="display: none">Download Recording</a>
     </div>
 
     <div id="savedConversions" class="container">
@@ -130,22 +156,58 @@
       <ul id="conversionsList"></ul>
     </div>
 
+    <script src="https://js.puter.com/v2/"></script>
     <script>
+      let mediaRecorder;
+      let audioChunks = [];
+
+      async function startRecording() {
+        audioChunks = [];
+        const stream = await navigator.mediaDevices.getUserMedia({
+          audio: true,
+        });
+        mediaRecorder = new MediaRecorder(stream);
+
+        mediaRecorder.ondataavailable = (event) => {
+          if (event.data.size > 0) {
+            audioChunks.push(event.data);
+          }
+        };
+
+        mediaRecorder.onstop = () => {
+          const audioBlob = new Blob(audioChunks, { type: "audio/webm" });
+          const audioUrl = URL.createObjectURL(audioBlob);
+          const downloadLink = document.getElementById("downloadButton");
+          downloadLink.href = audioUrl;
+          downloadLink.download = "instaPronounce_recording.webm";
+          downloadLink.style.display = "block";
+          document.getElementById("startButton").disabled = false;
+          document.getElementById("stopButton").disabled = true;
+          stream.getTracks().forEach((track) => track.stop()); // Stop the microphone stream
+        };
+
+        document.getElementById("startButton").disabled = true;
+        document.getElementById("stopButton").disabled = false;
+        puter.ai.txt2speech(document.getElementById("textToPronounce").value); // Start pronunciation after recording starts
+      }
+
+      function stopRecording() {
+        if (mediaRecorder) {
+          mediaRecorder.stop();
+        }
+      }
+
       function pronounceText() {
         const text = document.getElementById("textToPronounce").value;
         if (text.length > 3000) {
-          // Update character limit to match documentation example
           document.getElementById("pronunciationOutput").innerText =
             "Text exceeds the 3000 character limit.";
           return;
         }
-        // Use puter.ai.txt2speech for text-to-speech
-        puter.ai.txt2speech(text).then((audio) => {
-          audio.play();
-          document.getElementById(
-            "pronunciationOutput"
-          ).innerText = `Attempting pronunciation... (Check your audio output)`;
-        });
+        document.getElementById(
+          "pronunciationOutput"
+        ).innerText = `Attempting pronunciation... (Will be recorded if you start recording below)`;
+        // Pronunciation will start when the "Start Recording" button is clicked
       }
 
       function saveConversion() {
