@@ -133,16 +133,19 @@
     <script>
       function pronounceText() {
         const text = document.getElementById("textToPronounce").value;
-        if (text.length > 5000) {
+        if (text.length > 3000) {
+          // Update character limit to match documentation example
           document.getElementById("pronunciationOutput").innerText =
-            "Text exceeds the 5000 character limit.";
+            "Text exceeds the 3000 character limit.";
           return;
         }
-        // Use Puter.js for text-to-speech
-        puterJs.say(text);
-        document.getElementById(
-          "pronunciationOutput"
-        ).innerText = `Attempting pronunciation... (Check your audio output)`;
+        // Use puter.ai.txt2speech for text-to-speech
+        puter.ai.txt2speech(text).then((audio) => {
+          audio.play();
+          document.getElementById(
+            "pronunciationOutput"
+          ).innerText = `Attempting pronunciation... (Check your audio output)`;
+        });
       }
 
       function saveConversion() {
