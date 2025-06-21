@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://instaprounce.netlify.app/sitemap.xml
